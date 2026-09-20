@@ -96,7 +96,7 @@ export const SpendingFlowChart: React.FC<SpendingFlowChartProps> = ({
     return '#64748b';
   };
 
-  // Keep SVG canvas sized to container
+  // Keep SVG canvas sized to container on desktop
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -112,7 +112,7 @@ export const SpendingFlowChart: React.FC<SpendingFlowChartProps> = ({
     return () => window.removeEventListener('resize', updateSize);
   }, [categoryItems.length]);
 
-  // Layout calculation
+  // Layout calculation for desktop SVG
   const totalHeight = Math.max(categoryItems.length * 82 + 60, 520);
   const rootX = 140;
   const rootY = totalHeight / 2;
@@ -155,7 +155,7 @@ export const SpendingFlowChart: React.FC<SpendingFlowChartProps> = ({
             <span className="badge badge-subtle">Interactive Diagram</span>
           </h4>
           <p className="text-xs text-slate-400 mt-1">
-            Visual cash outflow from Total Spend into Categories and Food Sub-branches. Click any node to view transactions.
+            Visual cash outflow from Total Spend into Categories and Food Sub-branches. Tap any card to view transactions.
           </p>
         </div>
 
@@ -176,10 +176,142 @@ export const SpendingFlowChart: React.FC<SpendingFlowChartProps> = ({
         </div>
       </div>
 
-      {/* Interactive Flow Diagram */}
+      {/* =========================================================================
+          MOBILE VIEW: Native Vertical Flow Tree (Zero horizontal overflow)
+          ========================================================================= */}
+      <div className="mobile-flowchart">
+        {/* 1. Root Master Node (Total Spend) */}
+        <div 
+          className="mobile-flow-root"
+          onClick={() => onSelectCategory('All Spending', categoryItems.flatMap(c => c.transactions), totalDebit)}
+          title="Tap to view all spending transactions"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flow-node-icon bg-indigo-500/20 text-indigo-400 shrink-0">
+                <Wallet className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold text-slate-400 block truncate">Total Outflow</span>
+                <strong className="text-base sm:text-lg text-rose-400 font-bold block truncate">{formatCurrency(totalDebit)}</strong>
+              </div>
+            </div>
+            <span className="badge badge-subtle text-[11px] shrink-0">100% of Expenses</span>
+          </div>
+        </div>
+
+        {/* Stem down to categories */}
+        <div className="mobile-flow-stem" />
+
+        {/* 2. Category Flow Tree Branches */}
+        <div className="mobile-flow-categories">
+          {catPositions.map(cat => {
+            const percent = totalDebit > 0 ? Math.round((cat.amount / totalDebit) * 100) : 0;
+            const color = getCategoryColor(cat.name, cat.isMax);
+
+            return (
+              <div key={cat.name} className="mobile-flow-branch">
+                {/* Horizontal branch connector */}
+                <div 
+                  className="mobile-branch-line" 
+                  style={{ borderColor: cat.isMax ? '#ef4444' : color }} 
+                />
+
+                {/* Category Card */}
+                <div
+                  className={`mobile-flow-card ${cat.isMax ? 'node-max-traction' : ''}`}
+                  onClick={() => onSelectCategory(cat.name, cat.transactions, cat.amount)}
+                >
+                  {/* Red Badge for Maximum Traction */}
+                  {cat.isMax && (
+                    <div className="max-traction-badge-mobile">
+                      <Flame className="w-3 h-3 text-white animate-pulse" />
+                      <span>MAXIMUM TRACTION</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div 
+                        className="flow-node-icon shrink-0"
+                        style={{ 
+                          background: cat.isMax ? 'rgba(239, 68, 68, 0.2)' : `${color}20`,
+                          color: cat.isMax ? '#ef4444' : color,
+                          borderColor: cat.isMax ? '#ef4444' : undefined,
+                        }}
+                      >
+                        {getCategoryIcon(cat.name, cat.isMax)}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <strong className={`text-sm font-semibold truncate ${cat.isMax ? 'text-rose-200 font-bold' : 'text-slate-100'}`}>
+                            {cat.name}
+                          </strong>
+                          {cat.isFood && <span className="sub-count-chip shrink-0">4 Sub</span>}
+                        </div>
+                        <span className="text-xs text-slate-400 block truncate">
+                          {percent}% of spend • {cat.transactions.length} txns
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <div className={`text-sm font-bold ${cat.isMax ? 'text-rose-400 font-extrabold' : 'text-slate-100'}`}>
+                        {formatCurrency(cat.amount)}
+                      </div>
+                      <span className="text-indigo-400 text-xs flex items-center justify-end gap-0.5 mt-0.5">
+                        View <ExternalLink className="w-2.5 h-2.5 inline" />
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* If Food Category: Show Nested Sub-branches in clean cards */}
+                  {cat.isFood && (
+                    <div className="mobile-subcategories-group">
+                      <div className="mobile-sub-header">
+                        <span>Food Sub-branches</span>
+                        <span className="text-slate-400">({formatCurrency(totalFoodDebit)})</span>
+                      </div>
+                      <div className="mobile-sub-grid">
+                        {subPositions.map(sub => {
+                          const subPct = totalFoodDebit > 0 ? Math.round((sub.amount / totalFoodDebit) * 100) : 0;
+                          return (
+                            <div
+                              key={sub.key}
+                              className="mobile-sub-card min-w-0"
+                              style={{ borderLeftColor: sub.color }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onSelectCategory(sub.label, sub.txs, sub.amount);
+                              }}
+                            >
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span style={{ color: sub.color }} className="shrink-0">{sub.icon}</span>
+                                <span className="text-xs font-medium text-slate-200 truncate">{sub.label}</span>
+                              </div>
+                              <div className="text-xs font-bold text-slate-100 mt-1 flex items-baseline justify-between">
+                                <span className="truncate">{formatCurrency(sub.amount)}</span>
+                                <span className="text-slate-400 font-normal text-[10px] ml-1 shrink-0">({subPct}%)</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* =========================================================================
+          DESKTOP VIEW: Horizontal SVG Canvas with Flow Curves (Hidden on mobile)
+          ========================================================================= */}
       <div 
         ref={containerRef} 
-        className="flowchart-canvas-container"
+        className="flowchart-canvas-container desktop-flowchart"
         style={{ minHeight: `${totalHeight}px` }}
       >
         <svg 
@@ -292,7 +424,7 @@ export const SpendingFlowChart: React.FC<SpendingFlowChartProps> = ({
               {/* Max Traction Top Banner */}
               {cat.isMax && (
                 <div className="max-traction-badge">
-                  <Flame className="w-3 h-3 text-rose-400" />
+                  <Flame className="w-3 h-3 text-rose-400 animate-pulse" />
                   <span>MAX TRACTION</span>
                 </div>
               )}

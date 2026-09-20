@@ -791,7 +791,65 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(249, 115, 22, 0.4);
 }
 
+/* Dashboard Section Header & View Mode Switch */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.view-mode-toggle-group {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 3px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.view-mode-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-mode-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.view-mode-tab-btn.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+}
+
 /* Spending Flow Chart & Max Traction Red Highlighting */
+.mobile-flowchart {
+  display: none !important;
+}
+
+.desktop-flowchart {
+  display: block;
+}
+
 .spending-flowchart-wrapper {
   padding: 20px;
   overflow-x: auto;
@@ -1056,6 +1114,231 @@ h1, h2, h3, h4, h5, h6 {
 .flow-sub-meta {
   font-size: 0.65rem;
   color: var(--text-muted);
+}
+
+/* =========================================================================
+   Mobile Flow Chart (Adaptive Vertical Tree Flow - Zero Horizontal Overflow)
+   ========================================================================= */
+@media (max-width: 768px) {
+  .spending-flowchart-wrapper {
+    padding: 14px 10px;
+    overflow-x: hidden;
+  }
+
+  .flowchart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .flowchart-legend {
+    gap: 8px;
+    width: 100%;
+  }
+
+  .legend-item {
+    font-size: 0.7rem;
+  }
+
+  .desktop-flowchart {
+    display: none !important;
+  }
+
+  .mobile-flowchart {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 8px;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  /* 1. Root Master Node (Total Spend) */
+  .mobile-flow-root {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 15px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(79, 70, 229, 0.08) 100%);
+    border: 1.5px solid rgba(99, 102, 241, 0.35);
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(99, 102, 241, 0.15);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .mobile-flow-root:active {
+    transform: scale(0.99);
+    background: rgba(99, 102, 241, 0.22);
+  }
+
+  /* Vertical stem connecting Root to category branches */
+  .mobile-flow-stem {
+    width: 2px;
+    height: 22px;
+    margin-left: 26px;
+    background: linear-gradient(to bottom, #6366f1, rgba(99, 102, 241, 0.3));
+  }
+
+  /* Categories list container with continuous left guide line */
+  .mobile-flow-categories {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding-left: 26px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* The vertical trunk line along the left */
+  .mobile-flow-categories::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 24px;
+    left: 26px;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(99, 102, 241, 0.4), rgba(255, 255, 255, 0.08));
+  }
+
+  /* Each category branch item */
+  .mobile-flow-branch {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Horizontal branch connector elbow */
+  .mobile-branch-line {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    width: 14px;
+    height: 2px;
+    border-top: 2px dashed rgba(255, 255, 255, 0.3);
+    transform: translateX(-100%);
+  }
+
+  /* Category Card on Mobile */
+  .mobile-flow-card {
+    position: relative;
+    width: 100%;
+    margin-left: 6px;
+    padding: 12px 13px;
+    background: rgba(15, 23, 42, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .mobile-flow-card:active {
+    transform: scale(0.99);
+    background: rgba(30, 41, 59, 0.95);
+  }
+
+  /* Maximum traction red highlighting on mobile */
+  .mobile-flow-card.node-max-traction {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 2px solid #ef4444 !important;
+    box-shadow: 0 0 22px rgba(239, 68, 68, 0.32), inset 0 0 12px rgba(239, 68, 68, 0.1) !important;
+  }
+
+  .max-traction-badge-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2.5px 8px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border-radius: 9999px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.45);
+    animation: pulseRed 2s infinite;
+  }
+
+  /* Nested Food Subcategories */
+  .mobile-subcategories-group {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-sub-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #fb923c;
+    margin-bottom: 8px;
+  }
+
+  .mobile-sub-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .mobile-sub-card {
+    padding: 7px 9px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-left-width: 3px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    box-sizing: border-box;
+  }
+
+  .mobile-sub-card:active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Responsive Category Transactions Modal */
+  .category-details-modal {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+    margin: auto;
+  }
+
+  .category-modal-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .category-modal-search {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .type-toggle-group {
+    width: 100%;
+    display: flex;
+  }
+
+  .type-toggle-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .category-modal-tx-desc {
+    max-width: 170px;
+  }
 }
 
 /* Category Transactions Modal */
