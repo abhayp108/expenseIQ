@@ -255,6 +255,134 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-rose);
 }
 
+/* Mobile Header Controls & Responsive Navbar */
+.mobile-header-controls {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-quick-btn,
+.mobile-menu-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mobile-quick-btn:hover,
+.mobile-menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.btn-import-quick {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.mobile-dropdown-menu {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.mobile-nav-link:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-primary);
+}
+
+.mobile-nav-link.active {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.mobile-actions-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mobile-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 868px) {
+  .desktop-nav,
+  .desktop-actions {
+    display: none !important;
+  }
+
+  .mobile-header-controls {
+    display: flex;
+  }
+
+  .navbar-container {
+    width: calc(100% - 16px);
+    margin: 8px auto 0;
+    padding: 8px 12px;
+    border-radius: 14px;
+  }
+
+  .brand-title {
+    font-size: 1.15rem;
+  }
+
+  .brand-tagline {
+    display: none;
+  }
+
+  .main-content {
+    padding: 16px 8px 80px;
+  }
+}
+
 /* =========================================================
    Buttons & Micro-interactions
    ========================================================= */
